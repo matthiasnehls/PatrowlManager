@@ -1,7 +1,5 @@
 #!/bin/bash
-# Installation script for PatrowlManager and few engines
-# Copyright (C) 2020 Nicolas Mattiocco - @MaKyOtOx
-# Licensed under the AGPLv3 License
+# Installation script
 
 echo "[+] Setting variables if not set in env"
 # PG Database
@@ -28,10 +26,11 @@ echo "[+] Install PatrowlEngines"
 git clone https://github.com/Patrowl/PatrowlEngines $PE_INSTALL_PATH
 
 echo "[+] Wait for DB availability"
-while !</dev/tcp/$POSTGRES_HOST/$POSTGRES_PORT; do sleep 1; done
+while ! pg_isready 2>/dev/null; do sleep 1; done
 
 echo "[+] Wait for RabbitMQ availability"
-while !</dev/tcp/$RABBITMQ_HOST/$RABBITMQ_PORT; do sleep 1; done
+#while ! rabbitmqctl status 2>/dev/null; do sleep 1; done
+#todo: Find new way to check if rabbitmq is running
 
 source env3/bin/activate
 

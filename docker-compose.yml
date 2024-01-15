@@ -3,7 +3,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-alpine
-    container_name: patrowlmanager-rabbitmq
+    container_name: cyberscan-rabbitmq
     environment:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error}]
     expose:
@@ -12,7 +12,7 @@ services:
   db:
     image: postgres:11-alpine
     restart: always
-    container_name: patrowlmanager-postgres
+    container_name: cyberscan-postgres
     environment:
       - POSTGRES_DB=patrowl_db
       - POSTGRES_USER=PATROWL_DB_USER
@@ -24,9 +24,9 @@ services:
     #   - ./pg_data:/var/lib/postgresql/data/
 
   web:
-    container_name: patrowlmanager-django
+    container_name: cyberscan-frontend
     build: .
-    image: patrowl/patrowl-manager-community-edition:${PATROWL_MANAGER_VERSION}
+    image: cyberscan-frontend:latest
     environment:
       - POSTGRES_HOST=db
       - DEBUG=True
@@ -37,21 +37,21 @@ services:
     expose:
       - "8003"
     volumes:
-      - ./staticfiles:/opt/patrowl-manager/staticfiles
-      - ./media:/opt/patrowl-manager/media
+      - ./staticfiles:/opt/cyberscan-frontend/staticfiles
+      - ./media:/opt/cyberscan-frontend/media
     links:
       - db
       - rabbitmq
 
   nginx:
     image: nginx:stable-alpine
-    container_name: patrowlmanager-nginx
+    container_name: cyberscan-nginx
     ports:
       - "8083:8083"
     volumes:
-      - ./staticfiles:/opt/patrowl-manager/staticfiles
-      # - ./media:/opt/patrowl-manager/media
-      - ./var/log:/opt/patrowl-manager/var/log
+      - ./staticfiles:/opt/cyberscan-frontend/staticfiles
+      # - ./media:/opt/cyberscan-frontend/media
+      - ./var/log:/opt/cyberscan-frontend/var/log
       - ./nginx_docker.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web
